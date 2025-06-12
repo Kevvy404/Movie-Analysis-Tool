@@ -149,15 +149,6 @@ def analyse_genre(num_movies):
     return genre_df
 
 def analyse_revenue_vs_rating(num_movies):
-    """
-    Analyze revenue vs rating for a specified number of popular movies.
-    
-    Args:
-        num_movies (int): Number of movies to analyze
-    
-    Returns:
-        pandas.DataFrame: Revenue vs rating dataframe, or None if no data
-    """
     pages_needed = (num_movies + 19) // 20  # Round up division
     
     print(f"Fetching {num_movies} movies for revenue vs rating analysis...")
