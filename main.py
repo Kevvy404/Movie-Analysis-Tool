@@ -21,13 +21,72 @@ def search_movies(query):
     params = {
         'api_key' : API_KEY,
         'query' : query,
-        'language' : 'en-UK',
-        'page' : 5
+        'language' : 'en-US',
+        'page' : 1
     }
 
     response = requests.get(url, params = params)
     response.raise_for_status()
     return response.json()
+
+def search_and_select_movie():
+    """Search for movies by title and let user select one"""
+    while True:
+        movie_title = input("Enter movie title to search: ").strip()
+        if not movie_title:
+            print("Please enter a valid movie title.")
+            continue
+            
+        try:
+            search_results = search_movies(movie_title)
+            movies = search_results.get('results', [])
+            
+            if not movies:
+                print(f"No movies found for '{movie_title}'. Try a different search term.")
+                retry = input("Would you like to search again? (y/n): ").lower()
+                if retry != 'y':
+                    return None
+                continue
+            
+            # Display search results
+            print(f"\nFound {len(movies)} movies matching '{movie_title}':")
+            print("-" * 60)
+            
+            for i, movie in enumerate(movies[:10], 1):  # Show max 10 results
+                title = movie.get('title', 'Unknown Title')
+                release_date = movie.get('release_date', 'Unknown')
+                year = release_date[:4] if release_date and release_date != 'Unknown' else 'Unknown'
+                rating = movie.get('vote_average', 0)
+                
+                print(f"{i}. {title} ({year}) - Rating: {rating}/10")
+            
+            print("-" * 60)
+            
+            while True:
+                try:
+                    choice = input(f"Select a movie (1-{min(len(movies), 10)}) or 's' to search again: ").strip()
+                    
+                    if choice.lower() == 's':
+                        break
+                    
+                    choice_num = int(choice)
+                    if 1 <= choice_num <= min(len(movies), 10):
+                        selected_movie = movies[choice_num - 1]
+                        return selected_movie['id']
+                    else:
+                        print(f"Please enter a number between 1 and {min(len(movies), 10)}")
+                        
+                except ValueError:
+                    print("Please enter a valid number or 's' to search again")
+            
+            # If we reach here, user chose to search again
+            continue
+            
+        except Exception as e:
+            print(f"Error searching for movies: {e}")
+            retry = input("Would you like to try again? (y/n): ").lower()
+            if retry != 'y':
+                return None
 
 # def get_popular_movies():
 #     url = f"{BASE_URL}/movie/popular" 
@@ -49,16 +108,112 @@ def get_multiple_pages_of_popular_movies(pages=5):
         all_movies.extend(response.json()['results'])
     return all_movies
 
+def user_selection():
+    while True:
+        try:
+            print("\n" + "="*50)
+            print("TMDB MOVIE TOOL")
+            print("="*50)
+            print("1. Movie Information")
+            print("2. Movie Analysis") 
+            print("3. Exit")
+            print("="*50)
+            
+            selection = int(input("Select 1, 2 or 3: "))
+            
+            if selection == 1:
+                print("\n" + "="*50)
+                print("MOVIE SEARCH")
+                print("="*50)
+                
+                movie_id = search_and_select_movie()
+                
+                if movie_id is None:
+                    print("Movie search cancelled.")
+                    continue
+                
+                try:
+                    movie_data = get_movie_info(movie_id)
+                    print("\n" + "="*50)
+                    print("MOVIE INFORMATION")
+                    print("="*50)
+                    print(f"Title: {movie_data.get('title', 'N/A')}")
+                    print(f"Release Date: {movie_data.get('release_date', 'N/A')}")
+                    print(f"Rating: {movie_data.get('vote_average', 'N/A')}/10")
+                    print(f"Runtime: {movie_data.get('runtime', 'N/A')} minutes")
+                    print(f"Budget: ${movie_data.get('budget', 0):,}")
+                    print(f"Revenue: ${movie_data.get('revenue', 0):,}")
+
+                    genres = [genre['name'] for genre in movie_data.get('genres', [])]
+                    print(f"Genres: {', '.join(genres) if genres else 'N/A'}")
+                    
+                    overview = movie_data.get('overview', 'N/A')
+                    print(f"Overview: {overview[:200]}{'...' if len(overview) > 200 else ''}")
+                    print("="*50)
+                    
+                except Exception as e:
+                    print(f"Error fetching movie information: {e}")
+
+                continue_choice = input("\nWould you like to do something else? (y/n): ").lower()
+                if continue_choice != 'y':
+                    break
+
+            elif selection == 2:
+                # Movie Analysis - add the analysis choice here
+                print("\n" + "="*40)
+                print("MOVIE ANALYSIS OPTIONS")
+                print("="*40)
+                print("1. Genre Distribution Analysis")
+                print("2. Revenue vs Rating Analysis")
+                print("="*40)
+
+                try:
+                    analysis_choice = int(input("Choose analysis type (1 or 2): "))
+                    num_movies = get_user_input()
+                    
+                    if analysis_choice == 1:
+                        print("\nStarting Genre Analysis...")
+                        analyse_genre(num_movies)
+                    elif analysis_choice == 2:
+                        print("\nStarting Revenue vs Rating Analysis...")
+                        analyse_revenue_vs_rating(num_movies)
+                    else:
+                        print("Invalid choice. Running genre analysis by default.")
+                        analyse_genre(num_movies)
+                        
+                except ValueError:
+                    print("Invalid input. Please enter a number.")
+                    continue
+            
+                continue_choice = input("\nWould you like to do something else? (y/n): ").lower()
+                if continue_choice != 'y':
+                    break
+
+            elif selection == 3:
+                print("Thank you for using the TMDB Movie Tool!")
+                break
+            else:
+                print("Invalid selection. Please choose 1, 2, or 3.")
+                
+        except ValueError:
+            print("Please enter a valid number.")
+        except KeyboardInterrupt:
+            print("\n\nExiting... Thank you for using the TMDB Movie Tool!")
+            break
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
 def get_user_input():
     while True:
         try:
-            num_movies = int(input("How many movies would you like to analyze? (1-100): "))
+            num_movies = int(input("How many movies would you like to analyse? (1-100): "))
             if 1 <= num_movies <= 100:
                 return num_movies
             else:
                 print("Please enter a number between 1 and 100.")
         except ValueError:
             print("Please enter a valid number.")
+
 
 ##############################################################
 #                       Data Analysis                       #
@@ -141,9 +296,9 @@ def analyse_genre(num_movies):
     
     genre_df = genre_distro(detailed_movies)
     print("\nGenre Distribution:")
-    print("==========================")
+    print("="*50)
     print(genre_df)
-    print("==========================")
+    print("="*50)
     plot_genre_distro(genre_df)
 
     return genre_df
@@ -196,40 +351,7 @@ def analyse_revenue_vs_rating(num_movies):
     return revenue_df
 
 def main():
-    num_movies = get_user_input()
-    
-    analysis_choice = input("Choose analysis type (1: Genre, 2: Revenue vs Rating): ")
-    
-    if analysis_choice == "1":
-        analyse_genre(num_movies)
-    elif analysis_choice == "2":
-        analyse_revenue_vs_rating(num_movies)
-    else:
-        print("Invalid choice. Running genre analysis by default.")
-        analyse_genre(num_movies)
-
-    # if not API_KEY:
-    #     print("Error: TMDB_API_KEY not found in .env!")
-    # else:
-    #     print("API Key loaded successfully!")
-    #     print(f"Key (partial): {API_KEY[:5]}...") 
-
-    # popular_movies = get_multiple_pages_of_popular_movies(pages=3)
-    # movies = get_multiple_pages_of_popular_movies(pages=amount)
-
-    # detailed_movies = []
-    # for i, movie in enumerate(movies[:amount], 1):
-    #     details = get_movie_info(movie['id'])
-    #     detailed_movies.append(details) 
-
-    # genre_df = genre_distro(detailed_movies)
-
-    # print("\nGenre Distribution:")
-    # print("==========================")
-    # print(genre_df)
-    # print("==========================")
-
-    # plot_genre_distro(genre_df)
+    user_selection()
 
 if __name__ == "__main__":
     main()
