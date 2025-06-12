@@ -79,7 +79,6 @@ def search_and_select_movie():
                 except ValueError:
                     print("Please enter a valid number or 's' to search again")
             
-            # If we reach here, user chose to search again
             continue
             
         except Exception as e:
@@ -87,14 +86,7 @@ def search_and_select_movie():
             retry = input("Would you like to try again? (y/n): ").lower()
             if retry != 'y':
                 return None
-
-# def get_popular_movies():
-#     url = f"{BASE_URL}/movie/popular" 
-#     params = {'api_key': API_KEY}
-#     response = requests.get(url, params = params)
-#     response.raise_for_status()
-#     return response.json()
-
+            
 def get_multiple_pages_of_popular_movies(pages=5):
     all_movies = []
     for page in range(1, pages+1):
@@ -270,15 +262,12 @@ def plot_revenue_vs_rating(revenue_df):
     plt.show()
 
 def analyse_genre(num_movies):
-    pages_needed = (num_movies + 19) // 20  # Round up division
-    
+    pages_needed = (num_movies + 19) // 20 
     print(f"Fetching {num_movies} movies for analysis...")
-    
-    # Get popular movies (this returns a list directly)
+
     movies = get_multiple_pages_of_popular_movies(pages=pages_needed)
-    
     detailed_movies = []
-    # Limit to user-specified number of movies
+
     for i, movie in enumerate(movies[:num_movies], 1):
         try:
             print(f"Fetching details for movie {i}/{num_movies}: {movie.get('title', 'Unknown')}")
@@ -304,15 +293,13 @@ def analyse_genre(num_movies):
     return genre_df
 
 def analyse_revenue_vs_rating(num_movies):
-    pages_needed = (num_movies + 19) // 20  # Round up division
+    pages_needed = (num_movies + 19) // 20
     
     print(f"Fetching {num_movies} movies for revenue vs rating analysis...")
     
-    # Get popular movies (this returns a list directly)
     movies = get_multiple_pages_of_popular_movies(pages=pages_needed)
-    
     detailed_movies = []
-    # Limit to user-specified number of movies
+
     for i, movie in enumerate(movies[:num_movies], 1):
         try:
             print(f"Fetching details for movie {i}/{num_movies}: {movie.get('title', 'Unknown')}")
