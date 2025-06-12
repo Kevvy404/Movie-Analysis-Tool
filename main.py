@@ -148,7 +148,7 @@ def user_selection():
                     print(f"Genres: {', '.join(genres) if genres else 'N/A'}")
                     
                     overview = movie_data.get('overview', 'N/A')
-                    print(f"Overview: {overview[:200]}{'...' if len(overview) > 200 else ''}")
+                    print(f"Overview: {overview[:500]}{'...' if len(overview) > 500 else ''}")
                     print("="*50)
                     
                 except Exception as e:
