@@ -48,11 +48,10 @@ def search_and_select_movie():
                     return None
                 continue
             
-            # Display search results
             print(f"\nFound {len(movies)} movies matching '{movie_title}':")
             print("-" * 60)
             
-            for i, movie in enumerate(movies[:10], 1):  # Show max 10 results
+            for i, movie in enumerate(movies[:10], 1):
                 title = movie.get('title', 'Unknown Title')
                 release_date = movie.get('release_date', 'Unknown')
                 year = release_date[:4] if release_date and release_date != 'Unknown' else 'Unknown'
@@ -152,7 +151,6 @@ def user_selection():
                     break
 
             elif selection == 2:
-                # Movie Analysis - add the analysis choice here
                 print("\n" + "="*40)
                 print("MOVIE ANALYSIS OPTIONS")
                 print("="*40)
@@ -209,7 +207,7 @@ def get_user_input():
 
 
 ##############################################################
-#                       Data Analysis                       #
+#                       Data Analysis                        #
 ##############################################################
 
 def genre_distro(movies):
@@ -330,7 +328,6 @@ def analyse_revenue_vs_rating(num_movies):
     print(f"Highest Rating: {revenue_df.loc[revenue_df['rating'].idxmax(), 'title']} ({revenue_df['rating'].max():.1f})")
     print("=" * 60)
     
-    # Show correlation
     correlation = revenue_df['revenue'].corr(revenue_df['rating'])
     print(f"Correlation between Revenue and Rating: {correlation:.3f}")
     
