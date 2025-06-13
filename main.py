@@ -178,6 +178,7 @@ def user_selection():
             
                 continue_choice = input("\nWould you like to do something else? (y/n): ").lower()
                 if continue_choice != 'y':
+                    print("\n\nExiting... Thank you for using the TMDB Movie Tool!")
                     break
 
             elif selection == 3:

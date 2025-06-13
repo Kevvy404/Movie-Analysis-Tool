@@ -41,7 +41,7 @@ cat .env
 
 4. ### Installing the required libraries 
 ``` bash
-
+pip install -r requirements.txt
 ```
 
 5. ### Running the program
