@@ -17,7 +17,7 @@ A comprehensive TMDB API analyser that collects key film metrics including reven
 - TMDB API key
 
 1. ### Clone or Download the Project
-```
+``` bash
 git clone https://github.com/Kevvy404/Movie-Analysis-Tool.git
 cd Movie-Analysis-Tool
 ```
@@ -25,14 +25,27 @@ cd Movie-Analysis-Tool
 Go to https://developer.themoviedb.org/v4/docs/getting-started and register for an API key
 
 3. ### Create .env file
-```
-TMDB_API_KEY = YOUR_API_KEY
+``` bash
+# Replace your_api_key_here with your API key you generated
+cat > .env << 'EOF'
+TMDB_API_KEY = your_api_key_here
 TMDB_BASE_URL = https://api.themoviedb.org/3
 MAX_RESULTS = 100
+EOF
 ```
 
-4. ### Running the program
-Now you can run the program by using:
+```bash
+# Check your .env file has been created and has the correct contents
+cat .env
 ```
+
+4. ### Installing the required libraries 
+``` bash
+
+```
+
+5. ### Running the program
+Now you can run the program by using:
+``` bash
 python -u main.py
 ```
